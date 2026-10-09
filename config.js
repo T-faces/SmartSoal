@@ -3,5 +3,5 @@
  * This file contains no secrets. Never put AI API keys or passwords here.
  */
 window.SMARTSOAL_CONFIG = Object.freeze({
-  API_URL: ''
+  API_URL: 'https://script.google.com/macros/s/AKfycbx6t7lQpvhi6tG5Pjm1OqHfXlL7VIx3J_DXP6fDtntEPX_rCQejUXMR09qnlXcHzOvNUQ/exec'
 });
