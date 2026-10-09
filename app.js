@@ -1,7 +1,8 @@
 (() => {
 'use strict';
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
-const state = {apiUrl:localStorage.getItem('ss_api_url')||'',token:sessionStorage.getItem('ss_token')||'',provider:localStorage.getItem('ss_provider')||'gemini',questions:[],aiCount:0,user:null};
+const configuredApiUrl = String(window.SMARTSOAL_CONFIG?.API_URL || '').trim();
+const state = {apiUrl:configuredApiUrl || localStorage.getItem('ss_api_url')||'',apiLocked:!!configuredApiUrl,token:sessionStorage.getItem('ss_token')||'',provider:localStorage.getItem('ss_provider')||'gemini',questions:[],aiCount:0,user:null};
 const titles={dashboard:'Dashboard',generator:'Generator Soal AI',bank:'Bank Soal',users:'Manajemen Pengguna',cbt:'Ujian / CBT',reports:'Laporan',settings:'Pengaturan & Login'};
 $('#year').textContent=new Date().getFullYear();
 function notify(msg,type=''){const n=$('#notice');n.textContent=msg;n.className='notice'+(type?' '+type:'');n.classList.remove('hidden');}
@@ -9,15 +10,16 @@ function view(v){$$('.view').forEach(x=>x.classList.toggle('hidden',x.id!=='view
 $$('[data-view]').forEach(b=>b.addEventListener('click',()=>view(b.dataset.view)));
 $$('[data-goto]').forEach(b=>b.addEventListener('click',()=>view(b.dataset.goto)));
 $('#menu').addEventListener('click',()=>$('#sidebar').classList.toggle('open'));
-const sf=$('#settingsForm');sf.elements.apiUrl.value=state.apiUrl;sf.elements.provider.value=state.provider;sf.elements.token.value=state.token;
+const sf=$('#settingsForm');sf.elements.apiUrl.value=state.apiUrl;sf.elements.apiUrl.readOnly=state.apiLocked;sf.elements.apiUrl.placeholder=state.apiLocked?'Backend dikelola administrator aplikasi':'URL backend belum disetel administrator';sf.elements.provider.value=state.provider;sf.elements.token.value=state.token;
+if(state.apiLocked){const apiLabel=sf.elements.apiUrl.closest('label');if(apiLabel){const hint=document.createElement('small');hint.className='field-help';hint.textContent='Koneksi backend disediakan oleh pengelola aplikasi. Pengguna tidak perlu mengatur URL.';apiLabel.append(hint);}const setupHint=document.querySelector('#backendSetupHint');if(setupHint)setupHint.textContent='Backend terhubung melalui konfigurasi aplikasi. Silakan langsung login menggunakan akun sekolah.';}
 async function api(action,payload={},method='POST'){
- if(!state.apiUrl)throw Error('Isi Apps Script Web App URL terlebih dahulu di Pengaturan.');
+ if(!state.apiUrl)throw Error('Backend belum dikonfigurasi oleh pengelola aplikasi. Minta administrator menetapkan API_URL pada config.js satu kali.');
  const url=new URL(state.apiUrl);
  if(method==='GET'){url.searchParams.set('action',action);const r=await fetch(url);if(!r.ok)throw Error('HTTP '+r.status);return r.json();}
  const r=await fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,token:state.token,...payload})});
  const d=await r.json();if(!r.ok||d.ok===false)throw Error(d.error||('HTTP '+r.status));return d;
 }
-sf.addEventListener('submit',e=>{e.preventDefault();state.apiUrl=sf.elements.apiUrl.value.trim();state.provider=sf.elements.provider.value;state.token=sf.elements.token.value.trim();localStorage.setItem('ss_api_url',state.apiUrl);localStorage.setItem('ss_provider',state.provider);if(state.token)sessionStorage.setItem('ss_token',state.token);else sessionStorage.removeItem('ss_token');notify('Pengaturan disimpan di browser ini.','success');});
+sf.addEventListener('submit',e=>{e.preventDefault();state.apiUrl=state.apiLocked?configuredApiUrl:sf.elements.apiUrl.value.trim();state.provider=sf.elements.provider.value;state.token=sf.elements.token.value.trim();if(!state.apiLocked)localStorage.setItem('ss_api_url',state.apiUrl);localStorage.setItem('ss_provider',state.provider);if(state.token)sessionStorage.setItem('ss_token',state.token);else sessionStorage.removeItem('ss_token');notify('Pengaturan disimpan di browser ini.','success');});
 $('#testConnection').addEventListener('click',async()=>{const box=$('#connectionStatus');try{const d=await api('health',{},'GET');box.textContent='Backend merespons: '+(d.service||'OK')+' · '+(d.version||'');box.className='notice success';}catch(e){box.textContent=e.message;box.className='notice error';}});
 $('#loginForm').addEventListener('submit',async e=>{e.preventDefault();const f=e.currentTarget;try{const d=await api('login',{email:f.elements.email.value.trim(),password:f.elements.password.value});if(!d.token)throw Error('Token tidak diterima dari backend.');state.token=d.token;state.user=d.user||null;sessionStorage.setItem('ss_token',d.token);sf.elements.token.value=d.token;$('#sessionLabel').textContent=state.user?state.user.name+' · '+state.user.role:'Login';$('#avatar').textContent=state.user?.name?.[0]?.toUpperCase()||'G';notify('Login berhasil. Menu sudah disesuaikan dengan peran akun Anda.','success');if(['admin','teacher'].includes(state.user?.role))await refreshQuestions();setRoleUI();view('dashboard');}catch(err){notify('Login gagal: '+err.message,'error');}});
 $('#logout').addEventListener('click',()=>{state.token='';state.user=null;$('#usersNav').classList.add('hidden');$('#teacherExamPanel').classList.add('hidden');$('#studentExamPanel').classList.add('hidden');sessionStorage.removeItem('ss_token');sf.elements.token.value='';$('#sessionLabel').textContent='Belum login';notify('Token lokal dihapus. Sesi server kedaluwarsa sesuai masa berlaku.');});
