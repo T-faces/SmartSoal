@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#1759d5"><title>SmartSoal AI — Generator Soal & CBT</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar" id="sidebar">
+<a class="brand" href="#"><span class="brand-icon">S</span><span>SmartSoal<small>AI • EDU PLATFORM</small></span></a>
+<div class="nav-caption">MENU UTAMA</div>
+<button class="nav active" data-view="dashboard">▦ <span>Dashboard</span></button>
+<button class="nav" data-view="generator">✦ <span>Generator Soal AI</span></button>
+<button class="nav" data-view="bank">▤ <span>Bank Soal</span></button>
+<button class="nav" data-view="cbt">▣ <span>Ujian / CBT</span></button>
+<button class="nav" data-view="reports">▥ <span>Laporan</span></button>
+<div class="nav-caption">SISTEM</div><button class="nav" data-view="settings">⚙ <span>Pengaturan & Login</span></button>
+<div class="side-foot"><i></i> Workspace pembelajaran</div>
+</aside>
+<main class="main">
+<header class="topbar"><button id="menu" class="menu" aria-label="Buka menu">☰</button><div><div class="eyebrow">WORKSPACE GURU</div><h1 id="title">Dashboard</h1></div><div class="top-right"><span class="status"><i></i> <span id="sessionLabel">Belum login</span></span><span class="avatar" id="avatar">G</span></div></header>
+<div id="notice" class="notice">Selamat datang di SmartSoal AI. Atur koneksi backend dan login untuk mulai menyimpan soal.</div>
+<section class="view" id="view-dashboard">
+<div class="hero"><div><div class="eyebrow light">ASISTEN PENDIDIKAN CERDAS</div><h2>Buat soal berkualitas<br>lebih cepat dengan AI.</h2><p>Susun evaluasi belajar berdasarkan CP, materi, kelas, dan tingkat kesulitan dalam satu alur kerja.</p><button class="btn white" data-goto="generator">✦ Mulai membuat soal <b>→</b></button></div><div class="hero-art">✦<span>?</span><i>✓</i></div></div>
+<div class="stats"><article><div class="stat-icon blue">▤</div><small>Total Bank Soal</small><strong id="statQuestions">0</strong><em>Soal tersimpan</em></article><article><div class="stat-icon purple">♙</div><small>Pengguna</small><strong id="statUsers">—</strong><em>Data pengguna</em></article><article><div class="stat-icon green">▣</div><small>Ujian</small><strong id="statExams">0</strong><em>Ujian tersimpan</em></article><article><div class="stat-icon orange">↗</div><small>Aktivitas AI</small><strong id="statAi">0</strong><em>Soal dibuat di sesi ini</em></article></div>
+<div class="section-head"><div><h3>Mulai dari sini</h3><p>Pilih aktivitas untuk melanjutkan pekerjaan Anda.</p></div></div>
+<div class="quick"><button data-goto="generator"><span class="quick-icon purple">✦</span><b>Generate soal AI</b><small>Buat soal dari CP dan materi</small><span class="arrow">↗</span></button><button data-goto="bank"><span class="quick-icon blue">▤</span><b>Kelola bank soal</b><small>Cari, simpan, dan hapus soal</small><span class="arrow">↗</span></button><button data-goto="cbt"><span class="quick-icon green">▣</span><b>Ujian digital</b><small>Persiapkan CBT online</small><span class="arrow">↗</span></button></div>
+</section>
+<section class="view hidden" id="view-generator"><div class="section-head"><div><h3>Generator Soal AI</h3><p>Isi informasi pembelajaran; prompt akan disusun otomatis.</p></div></div>
+<form id="generatorForm" class="panel form-grid">
+<label>Mata pelajaran<input name="subject" required placeholder="Contoh: Matematika"></label>
+<label>Kelas<select name="grade"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option selected>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select></label>
+<label>Fase<select name="phase"><option>A</option><option>B</option><option selected>C</option><option>D</option><option>E</option><option>F</option></select></label>
+<label>Jenis soal<select name="type"><option value="multiple_choice">Pilihan ganda</option><option value="essay">Esai</option><option value="true_false">Benar / Salah</option><option value="matching">Menjodohkan</option><option value="short_answer">Isian singkat</option></select></label>
+<label class="full">Capaian Pembelajaran (CP)<textarea name="cp" rows="3" required placeholder="Tuliskan CP yang menjadi acuan..."></textarea></label>
+<label class="full">Materi / topik<input name="topic" required placeholder="Contoh: operasi pecahan"></label>
+<label>Tingkat kesulitan<select name="difficulty"><option>Mudah</option><option selected>Sedang</option><option>Sulit</option><option>Campuran</option></select></label>
+<label>Jumlah soal<select name="count"><option>5</option><option selected>10</option><option>15</option><option>20</option><option>25</option></select></label>
+<div class="full form-actions"><button class="btn primary" id="generateBtn" type="submit">✦ Generate soal</button><span class="muted">Periksa kesesuaian soal dan kunci sebelum digunakan.</span></div>
+</form><div id="generated" class="results"></div></section>
+<section class="view hidden" id="view-bank"><div class="section-head"><div><h3>Bank Soal</h3><p>Kelola soal tersimpan pada Google Sheets.</p></div><button class="btn primary" data-goto="generator">+ Buat soal</button></div><div class="panel"><div class="toolbar"><input id="searchQuestions" placeholder="Cari soal atau mata pelajaran..."><button class="btn outline" id="reloadQuestions">Muat ulang</button><button class="btn outline" id="exportCsv">Ekspor CSV</button></div><div id="questionTable" class="empty">Login untuk memuat bank soal.</div></div></section>
+<section class="view hidden" id="view-cbt"><div class="section-head"><div><h3>Ujian / CBT</h3><p>Fondasi menu ujian online.</p></div></div><div class="panel empty"><div class="empty-symbol">▣</div><b>Modul CBT akan dilanjutkan pada tahap berikutnya</b><p>Perlu alur attempt di server, timer tervalidasi, autosave jawaban, token ujian, penilaian, dan pengujian sebelum digunakan siswa.</p></div></section>
+<section class="view hidden" id="view-reports"><div class="section-head"><div><h3>Laporan</h3><p>Ringkasan penggunaan dan hasil ujian.</p></div></div><div class="panel empty">Analitik hasil akan aktif setelah modul CBT dikembangkan.</div></section>
+<section class="view hidden" id="view-settings"><div class="section-head"><div><h3>Pengaturan & Login</h3><p>URL backend disimpan pada browser. Kunci AI tetap berada di Script Properties.</p></div></div>
+<form id="settingsForm" class="panel form-grid"><label class="full">Apps Script Web App URL<input name="apiUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec"></label><label>Provider AI<select name="provider"><option value="gemini">Gemini API</option><option value="openai">OpenAI API</option></select></label><label>Token sesi<input name="token" type="password" autocomplete="off" placeholder="Diisi setelah login"></label><div class="full form-actions"><button class="btn primary">Simpan pengaturan</button><button type="button" class="btn outline" id="testConnection">Tes koneksi</button><button type="button" class="btn outline" id="logout">Keluar</button></div><p class="muted full">Jangan pernah memasukkan API key OpenAI/Gemini ke halaman ini atau repo GitHub.</p></form><div id="connectionStatus" class="notice hidden"></div>
+<div class="panel login-panel"><h3>Login pengguna</h3><form id="loginForm" class="form-grid"><label>Email<input name="email" type="email" required autocomplete="username"></label><label>Password<input name="password" type="password" required autocomplete="current-password"></label><div class="full"><button class="btn primary">Login</button></div></form><p class="muted">Admin pertama dibuat dari Apps Script editor sesuai panduan README.</p></div></section>
+<footer>© <span id="year"></span> SmartSoal AI · Mendukung guru Indonesia</footer>
+</main></div><script src="app.js"></script></body></html>
