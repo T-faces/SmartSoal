@@ -389,6 +389,7 @@ function submitExam_(req){
 function normalizeAnswer_(v){return String(v||'').trim().toLowerCase().replace(/^[a-d][.)]\s*/,'').replace(/\s+/g,' ');}
 function answerCorrect_(given,correct,q){
   const g=normalizeAnswer_(given),a=normalizeAnswer_(correct);
+  if(!g||!a)return false;
   if(g===a)return true;
   const opts=Array.isArray(q.options)?q.options:[];
   const letter='abcd'.indexOf(g);
