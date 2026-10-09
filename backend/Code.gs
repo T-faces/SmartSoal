@@ -108,7 +108,7 @@ function digest_(text){
     .map(b=>('0'+((b+256)%256).toString(16)).slice(-2)).join('');
 }
 function makePassword_(password,salt){return digest_(salt+':'+password);}
-function publicUser_(u){return {id:u.id,name:u.name,email:u.email,role:u.role};}
+function publicUser_(u){return {id:u.id,name:u.name,email:u.email,role:u.role,active:u.active===true||String(u.active)==='true'||u.active===1,createdAt:u.createdAt||''};}
 
 /** Run once from the Apps Script editor after setting the BOOTSTRAP_* properties. */
 function bootstrapAdminFromEditor(){
@@ -375,7 +375,7 @@ function submitExam_(req){
     questions.forEach(q=>{
       const type=String(q.type||'multiple_choice'),given=String(answers[q.id]===undefined?'':answers[q.id]).trim(),correct=String(q.answer===undefined?'':q.answer).trim();
       if(['essay'].indexOf(type)>=0)return;
-      gradable++;if(normalizeAnswer_(given)===normalizeAnswer_(correct))earned++;
+      gradable++;if(answerCorrect_(given,correct,q))earned++;
     });
     const score=gradable?Math.round(earned/gradable*10000)/100:0,now=new Date().toISOString();
     const finalAnswers={};ids.forEach(id=>{if(answers[id]!==undefined)finalAnswers[id]=String(answers[id]).slice(0,5000);});
