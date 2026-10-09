@@ -208,6 +208,8 @@ function remove_(req){
     for(let i=1;i<vals.length;i++)if(String(vals[i][idCol])===id){
       const row={};headers.forEach((h,j)=>row[h]=parseCell_(h,vals[i][j]));
       if(row.createdBy&&row.createdBy!==user.id&&user.role!=='admin')throw new Error('Tidak boleh menghapus data milik pengguna lain.');
+      if(table==='exams'&&rows_('attempts').some(a=>a.examId===id))throw new Error('Ujian tidak dapat dihapus karena sudah memiliki sesi siswa.');
+      if(table==='questions'&&rows_('exams').some(ex=>{const ids=Array.isArray(ex.questionIds)?ex.questionIds:JSON.parse(ex.questionIds||'[]');return ids.indexOf(id)>=0;}))throw new Error('Soal tidak dapat dihapus karena digunakan pada ujian.');
       sh.deleteRow(i+1);audit_(user,'remove',table,id);return {deleted:true};
     }
   }finally{lock.releaseLock();}
