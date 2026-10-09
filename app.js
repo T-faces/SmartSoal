@@ -19,7 +19,7 @@ async function api(action,payload={},method='POST'){
 }
 sf.addEventListener('submit',e=>{e.preventDefault();state.apiUrl=sf.elements.apiUrl.value.trim();state.provider=sf.elements.provider.value;state.token=sf.elements.token.value.trim();localStorage.setItem('ss_api_url',state.apiUrl);localStorage.setItem('ss_provider',state.provider);if(state.token)sessionStorage.setItem('ss_token',state.token);else sessionStorage.removeItem('ss_token');notify('Pengaturan disimpan di browser ini.','success');});
 $('#testConnection').addEventListener('click',async()=>{const box=$('#connectionStatus');try{const d=await api('health',{},'GET');box.textContent='Backend merespons: '+(d.service||'OK')+' · '+(d.version||'');box.className='notice success';}catch(e){box.textContent=e.message;box.className='notice error';}});
-$('#loginForm').addEventListener('submit',async e=>{e.preventDefault();const f=e.currentTarget;try{const d=await api('login',{email:f.elements.email.value.trim(),password:f.elements.password.value});if(!d.token)throw Error('Token tidak diterima dari backend.');state.token=d.token;state.user=d.user||null;sessionStorage.setItem('ss_token',d.token);sf.elements.token.value=d.token;$('#sessionLabel').textContent=state.user?state.user.name+' · '+state.user.role:'Login';$('#avatar').textContent=state.user?.name?.[0]?.toUpperCase()||'G';notify('Login berhasil.','success');await refreshQuestions();setRoleUI();}catch(err){notify('Login gagal: '+err.message,'error');}});
+$('#loginForm').addEventListener('submit',async e=>{e.preventDefault();const f=e.currentTarget;try{const d=await api('login',{email:f.elements.email.value.trim(),password:f.elements.password.value});if(!d.token)throw Error('Token tidak diterima dari backend.');state.token=d.token;state.user=d.user||null;sessionStorage.setItem('ss_token',d.token);sf.elements.token.value=d.token;$('#sessionLabel').textContent=state.user?state.user.name+' · '+state.user.role:'Login';$('#avatar').textContent=state.user?.name?.[0]?.toUpperCase()||'G';notify('Login berhasil.','success');if(['admin','teacher'].includes(state.user?.role))await refreshQuestions();setRoleUI();}catch(err){notify('Login gagal: '+err.message,'error');}});
 $('#logout').addEventListener('click',()=>{state.token='';state.user=null;$('#usersNav').classList.add('hidden');$('#teacherExamPanel').classList.add('hidden');$('#studentExamPanel').classList.add('hidden');sessionStorage.removeItem('ss_token');sf.elements.token.value='';$('#sessionLabel').textContent='Belum login';notify('Token lokal dihapus. Sesi server kedaluwarsa sesuai masa berlaku.');});
 $('#generatorForm').addEventListener('submit',async e=>{e.preventDefault();const f=e.currentTarget,btn=$('#generateBtn');btn.disabled=true;btn.textContent='Menyusun soal…';try{const s=Object.fromEntries(new FormData(f));s.count=Number(s.count);s.provider=state.provider;const d=await api('generateQuestions',{settings:s});renderGenerated(d.questions||[]);state.aiCount+=(d.questions||[]).length;$('#statAi').textContent=state.aiCount;notify('Soal berhasil dibuat. Periksa kembali kunci dan kesesuaiannya sebelum digunakan.','success');}catch(err){notify('Generate gagal: '+err.message,'error');}finally{btn.disabled=false;btn.textContent='✦ Generate soal';}});
 function renderGenerated(qs){const root=$('#generated');root.replaceChildren();if(!qs.length){root.textContent='AI belum mengembalikan soal.';return;}qs.forEach((q,i)=>{const card=document.createElement('article');card.className='question-result';const h=document.createElement('h4');h.textContent=(i+1)+'. '+(q.question||'(Teks soal kosong)');card.append(h);if(Array.isArray(q.options)){const ol=document.createElement('ol');ol.type='A';q.options.forEach(o=>{const li=document.createElement('li');li.textContent=typeof o==='string'?o:(o.text||'');ol.append(li);});card.append(ol);}if(q.answer!==undefined){const a=document.createElement('div');a.className='answer';a.textContent='Kunci jawaban: '+(typeof q.answer==='string'?q.answer:JSON.stringify(q.answer));card.append(a);}if(q.explanation){const p=document.createElement('p');p.textContent='Pembahasan: '+q.explanation;card.append(p);}const b=document.createElement('button');b.className='btn outline';b.textContent='Simpan ke bank soal';b.addEventListener('click',async()=>{try{await api('save',{table:'questions',record:q});b.textContent='Tersimpan ✓';b.disabled=true;await refreshQuestions();}catch(err){notify('Gagal menyimpan: '+err.message,'error');}});card.append(b);root.append(card);});}
@@ -34,6 +34,7 @@ function showBox(id,msg,type=''){const n=$('#'+id);n.textContent=msg;n.className
 function setRoleUI(){
  const role=state.user?.role||'';
  $('#usersNav').classList.toggle('hidden',role!=='admin');
+ $('[data-view="generator"],[data-view="bank"]').forEach(n=>n.classList.toggle('hidden',!['admin','teacher'].includes(role)));
  $('#teacherExamPanel').classList.toggle('hidden',!['admin','teacher'].includes(role));
  $('#studentExamPanel').classList.toggle('hidden',role!=='student');
  if(role==='admin')refreshUsers();
@@ -103,11 +104,11 @@ function renderExamReport(data){
  records.forEach(r=>{const tr=el('tr');[r.user||r.userId,r.status,r.score===undefined?'—':r.score,r.submittedAt||'—'].forEach(v=>tr.append(el('td',String(v??''))));body.append(tr);});t.append(body);root.append(t);view('reports');
 }
 async function refreshReports(){
- if(!state.user||state.user.role==='student')return;
- try{const d=await api('list',{table:'attempts'}),rows=d.records||[],root=$('#reportsTable');root.replaceChildren();
+ if(!state.user)return;
+ try{const d=state.user.role==='student'?await api('myExams'):await api('list',{table:'attempts'}),rows=d.records||[],root=$('#reportsTable');
   if(!rows.length){root.textContent='Belum ada hasil ujian.';return;}
-  const t=el('table'),thead=el('thead'),hr=el('tr');['Ujian ID','Siswa ID','Status','Nilai','Waktu kumpul'].forEach(x=>hr.append(el('th',x)));thead.append(hr);t.append(thead);const body=el('tbody');
-  rows.forEach(r=>{const tr=el('tr');[r.examId,r.userId,r.status,r.score===undefined?'—':r.score,r.submittedAt||'—'].forEach(v=>tr.append(el('td',String(v??''))));body.append(tr);});t.append(body);root.append(t);
+  const t=el('table'),thead=el('thead'),hr=el('tr');(state.user.role==='student'?['Ujian','Status','Nilai','Waktu kumpul']:['Ujian ID','Siswa ID','Status','Nilai','Waktu kumpul']).forEach(x=>hr.append(el('th',x)));thead.append(hr);t.append(thead);const body=el('tbody');
+  rows.forEach(r=>{const tr=el('tr');(state.user.role==='student'?[r.examTitle||r.examId,r.status,r.score===undefined?'—':r.score,r.submittedAt||'—']:[r.examId,r.userId,r.status,r.score===undefined?'—':r.score,r.submittedAt||'—']).forEach(v=>tr.append(el('td',String(v??''))));body.append(tr);});t.append(body);root.append(t);
  }catch(e){$('#reportsTable').textContent='Gagal memuat laporan: '+e.message;}
 }
 $('#reloadExams').addEventListener('click',refreshExams);$('#reloadReports').addEventListener('click',refreshReports);
@@ -147,7 +148,7 @@ function startExamTimer(){
  tick();state.timerHandle=setInterval(tick,1000);
 }
 async function initializeSession(){
- try{const d=await api('me');state.user=d.user;$('#sessionLabel').textContent=state.user.name+' · '+state.user.role;$('#avatar').textContent=state.user.name?.[0]?.toUpperCase()||'G';await refreshQuestions();setRoleUI();}
+ try{const d=await api('me');state.user=d.user;$('#sessionLabel').textContent=state.user.name+' · '+state.user.role;$('#avatar').textContent=state.user.name?.[0]?.toUpperCase()||'G';if(['admin','teacher'].includes(state.user.role))await refreshQuestions();setRoleUI();}
  catch(e){state.user=null;$('#sessionLabel').textContent='Sesi tidak aktif';}
 }
 
