@@ -135,3 +135,46 @@ footer{padding:40px 0 24px}
 @media(max-width:1100px){.main{padding:0 24px}.sidebar{width:245px}.main{margin-left:245px}.hero{padding:32px}.hero h2{font-size:30px}.hero-art{margin-right:20px}}
 @media(max-width:760px){.sidebar{width:268px;transform:translateX(-100%)}.main{margin-left:0;padding:0 16px}.topbar{height:82px;margin-bottom:20px}.topbar h1{font-size:23px}.hero{padding:27px 23px;min-height:250px;border-radius:22px}.hero h2{font-size:28px}.hero p{max-width:100%;font-size:13px}.hero-art{right:-8px;bottom:0;margin:0}.stats{gap:12px;margin:18px 0 27px}.stats article{padding:16px;border-radius:16px}.stats strong{font-size:25px}.quick{grid-template-columns:1fr}.quick button{min-height:140px;padding:20px}.panel{padding:18px;border-radius:16px}.form-grid{gap:15px}.helper-banner{padding:15px;gap:11px}.section-head{align-items:flex-start;gap:12px}.toolbar>*{flex:1 1 auto}.toolbar input{flex-basis:100%}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+
+/* VISUAL REDESIGN V4: stronger layout contrast so the update is unmistakable */
+:root{--blue:#365cf5;--ink:#152342;--muted:#7887a2;--line:#e4eaf4;--bg:#f3f6fc}
+body{background:#f3f6fc;color:#152342}
+.sidebar{background:linear-gradient(180deg,#15264a 0%,#101e3a 100%);border-right:0;color:#fff;box-shadow:8px 0 35px rgba(17,32,65,.10)}
+.brand{color:#fff;padding:4px 10px 42px}
+.brand small{color:#aab8d5}
+.brand-icon{background:linear-gradient(145deg,#4976ff,#63b5ff);box-shadow:0 8px 22px #4477ff45}
+.nav-caption{color:#7f92b8}
+.nav{color:#bdc9e0;border-radius:12px}
+.nav.active{color:#fff;background:linear-gradient(100deg,#365cf5,#4777ff);box-shadow:0 8px 20px #365cf53b,inset 3px 0 #9de8ff}
+.nav:hover{color:#fff;background:#263a61}
+.side-foot{border-top-color:#2a3a5b;color:#aab8d5}
+.side-foot i{background:#56e0b0}
+.main{padding:0 42px}
+.topbar{border-bottom:1px solid #e3e9f4}
+.topbar h1{font-size:30px;font-weight:800}
+.status{background:#fff;box-shadow:0 4px 14px #263a6410}
+.hero{background:radial-gradient(circle at 88% 20%,#507eff 0,#345be7 30%,transparent 56%),linear-gradient(120deg,#172b59 0%,#2449b7 56%,#3569ef 100%);border:1px solid #4169db;min-height:320px;border-radius:28px;padding:44px 48px;box-shadow:0 22px 48px rgba(43,82,202,.20)}
+.hero:after{content:"";position:absolute;width:230px;height:230px;border:1px solid #ffffff20;border-radius:50%;right:50px;top:35px;box-shadow:0 0 0 28px #ffffff08,0 0 0 58px #ffffff06}
+.hero h2{font-size:39px;max-width:580px;line-height:1.12;letter-spacing:-1.7px}
+.hero p{font-size:14px;line-height:1.85;max-width:530px}
+.hero-art{z-index:1;font-size:126px;margin-right:55px;color:#c7d7ff4d}
+.hero-art span{color:#fff;text-shadow:0 4px 25px #fff5}
+.hero .btn.white{padding:15px 20px;border-radius:13px;box-shadow:0 8px 24px #0d225844}
+.stats{gap:18px;margin:25px 0 34px}
+.stats article{position:relative;overflow:hidden;border:1px solid #e4eaf5;border-radius:21px;padding:22px 23px;box-shadow:0 7px 22px rgba(28,47,87,.035)}
+.stats article:after{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,#365cf5,#69b6ff);opacity:.8}
+.stats article:nth-child(2):after{background:linear-gradient(90deg,#9567ed,#c4a5ff)}
+.stats article:nth-child(3):after{background:linear-gradient(90deg,#17ad83,#7ae2bd)}
+.stats article:nth-child(4):after{background:linear-gradient(90deg,#f3a044,#ffd18a)}
+.stat-icon{width:45px;height:45px;border-radius:15px}
+.section-head h3{font-size:20px}
+.quick button{border-radius:20px;border-color:#e4eaf5;box-shadow:0 7px 22px #1d315b08}
+.quick button:hover{box-shadow:0 15px 30px #1d315b12}
+.quick-icon{width:45px;height:45px}
+.panel{border-color:#e4eaf5;box-shadow:0 8px 25px rgba(28,47,87,.035)}
+.btn.primary{background:linear-gradient(110deg,#3159ed,#4d7bff);box-shadow:0 7px 18px #3159ed30}
+.notice{box-shadow:0 4px 16px #1d315b05}
+@media(min-width:1500px){.main{padding-left:48px;padding-right:48px}}
+@media(max-width:1100px){.main{padding:0 24px}.hero{padding:34px}.hero h2{font-size:32px}}
+@media(max-width:760px){.main{padding:0 16px}.hero{min-height:260px;padding:27px 23px;border-radius:22px}.hero h2{font-size:29px}.hero:after{right:-90px}.hero-art{opacity:.45}.stats article{padding:17px}}
