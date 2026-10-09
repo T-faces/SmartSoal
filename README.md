@@ -28,17 +28,30 @@ Aplikasi generator soal berbasis AI dan fondasi CBT online untuk guru Indonesia.
 6. Buka situs GitHub Pages → Pengaturan, isi URL backend.
 7. Untuk membuat admin pertama, isi BOOTSTRAP_ADMIN_NAME, BOOTSTRAP_ADMIN_EMAIL, dan BOOTSTRAP_ADMIN_PASSWORD di Script Properties, lalu jalankan bootstrapAdminFromEditor. BOOTSTRAP_KEY dihapus setelah berhasil.
 
-## API awal
-- GET ?action=health
-- POST {action:"login", email, password}
-- POST {action:"me", token}
-- POST {action:"list", token, table:"questions"}
-- POST {action:"save", token, table:"questions", record:{...}}
-- POST {action:"remove", token, table:"questions", id}
-- POST {action:"generateQuestions", token, settings:{...}}
-- POST {action:"settings", token, settings:{...}}
+## Fitur yang sudah ditambahkan
+- Peran Admin, Guru, dan Siswa; Admin dapat membuat/mengubah status akun dan mereset password dengan menetapkan password baru.
+- Pembuatan ujian dari soal yang ada di bank soal, token ujian, status draf/publikasi, durasi dan jendela waktu opsional.
+- Siswa dapat masuk menggunakan token, memulai satu attempt per ujian, mengisi jawaban, autosave, dan mengumpulkan ujian.
+- Deadline attempt disimpan oleh backend; backend menolak autosave setelah deadline dan saat pengumpulan setelah deadline memakai jawaban terakhir yang sudah tersimpan.
+- Penilaian otomatis untuk soal non-esai dan laporan nilai/status.
 
-## Batasan tahap awal
-Ini fondasi bertahap, bukan klaim bahwa CBT sudah siap untuk ujian berisiko tinggi. Sebelum penggunaan nyata, lanjutkan implementasi ujian/attempt server-side, timer tervalidasi, autosave, token ujian, penilaian, audit log, pemulihan password, pembatasan percobaan login, dan pengujian keamanan/beban. Jangan menyimpan data siswa sungguhan sebelum peninjauan keamanan dan privasi.
+## API backend
+- GET `?action=health`
+- POST `login`, `me`
+- POST `list` untuk `questions`, `subjects`, `exams`, `results`, `users` (khusus Admin), dan `attempts` sesuai hak akses
+- POST `save`, `remove` untuk bank soal/mapel/ujian sesuai hak akses
+- POST `userSave`, `userRemove` (khusus Admin)
+- POST `createExam`, `joinExam`, `startAttempt`, `saveAnswers`, `submitExam`, `myExams`, `examStatus`
+- POST `generateQuestions`, `settings`
+
+## Memperbarui backend Apps Script
+Setiap kali `backend/Code.gs` berubah di GitHub, perubahan tersebut **tidak otomatis** memperbarui project Apps Script Anda. Salin kode terbaru dari repositori ke editor Apps Script, simpan, jalankan `setupDatabase` lagi agar sheet baru `attempts` dibuat, lalu buka **Deploy → Manage deployments → Edit → New version → Deploy**. Gunakan URL Web App `/exec` yang sama jika deployment diperbarui, kemudian tes koneksi dan login lagi.
+
+## Batasan dan pemeriksaan sebelum penggunaan nyata
+- Sistem ini merupakan implementasi awal yang perlu diuji pada spreadsheet dan akun sekolah Anda. Belum dilakukan uji integrasi terhadap deployment Apps Script milik pengguna atau uji beban multi-siswa.
+- Timer memakai deadline server yang tersimpan, tetapi Apps Script dan Google Sheets bukan infrastruktur ujian berkapasitas tinggi; lakukan uji beban dan rencana pemulihan sebelum ujian penting.
+- Esai tidak dinilai otomatis. Penilaian otomatis mengandalkan kecocokan kunci jawaban, sehingga guru wajib meninjau kunci AI dan variasi jawaban.
+- Belum tersedia pemulihan password mandiri, rate limiting login, pengawasan proktor, dan analitik lanjutan.
+- Jangan menyimpan data siswa sungguhan sebelum peninjauan keamanan, privasi, dan kebijakan sekolah.
 
 **Keamanan:** jangan pernah menaruh API key AI, APP_SECRET, atau password admin di frontend atau repo. GitHub Pages adalah frontend publik; autentikasi dan validasi akses harus dilakukan backend.
