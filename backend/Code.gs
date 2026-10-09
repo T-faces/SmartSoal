@@ -386,6 +386,16 @@ function submitExam_(req){
   }finally{lock.releaseLock();}
 }
 function normalizeAnswer_(v){return String(v||'').trim().toLowerCase().replace(/^[a-d][.)]\s*/,'').replace(/\s+/g,' ');}
+function answerCorrect_(given,correct,q){
+  const g=normalizeAnswer_(given),a=normalizeAnswer_(correct);
+  if(g===a)return true;
+  const opts=Array.isArray(q.options)?q.options:[];
+  const letter='abcd'.indexOf(g);
+  if(letter>=0&&letter<opts.length&&normalizeAnswer_(typeof opts[letter]==='string'?opts[letter]:opts[letter].text)===a)return true;
+  const answerLetter='abcd'.indexOf(a);
+  if(answerLetter>=0&&answerLetter<opts.length&&normalizeAnswer_(typeof opts[answerLetter]==='string'?opts[answerLetter]:opts[answerLetter].text)===g)return true;
+  return false;
+}
 function updateRow_(table,id,rec){
   const sh=sheet_(table),vals=sh.getDataRange().getValues(),headers=vals[0],idCol=headers.indexOf('id');
   for(let i=1;i<vals.length;i++)if(String(vals[i][idCol])===String(id)){sh.getRange(i+1,1,1,headers.length).setValues([headers.map(h=>cell_(rec[h]))]);return;}
