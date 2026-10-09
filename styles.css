@@ -18,3 +18,53 @@
 #view-users td .btn,#view-cbt td .btn{margin:2px 4px 2px 0}
 .hidden{display:none!important}
 @media(max-width:640px){.attempt-header{align-items:flex-start;flex-direction:column}.timer{font-size:1.25rem}#view-users table,#view-cbt table,#view-reports table{font-size:.84rem;display:block;overflow-x:auto;white-space:nowrap}}
+
+
+/* Friendly interface refinements */
+:root{--blue:#215bd8;--ink:#17263f;--muted:#6f7f95;--line:#e5eaf2;--bg:#f5f7fb}
+body{line-height:1.6;background:#f5f7fb}
+button,input,select,textarea{transition:border-color .16s ease,box-shadow .16s ease,background .16s ease,transform .16s ease}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #bcd2ff;outline-offset:2px}
+.nav{min-height:44px}.nav.active{font-weight:800;box-shadow:inset 3px 0 #215bd8}
+.main{padding-bottom:20px}
+.topbar{position:relative}
+.hero{box-shadow:0 12px 30px #205bd51a}
+.hero h2{max-width:560px}
+.panel{box-shadow:0 5px 20px #18294405}
+.panel h3{margin-bottom:12px}
+.form-grid label{gap:8px}
+.form-grid label small{font-weight:500;line-height:1.45}
+.field-help{color:#7a879b;font-size:11px}
+.form-grid input,.form-grid select,.form-grid textarea,.toolbar input{min-height:44px}
+.form-grid textarea{resize:vertical}
+.btn{min-height:40px;transition:transform .15s ease,box-shadow .15s ease}
+.btn:disabled{opacity:.6;cursor:wait}
+.btn:not(:disabled):hover{transform:translateY(-1px)}
+.helper-banner{display:flex;align-items:flex-start;gap:13px;padding:16px 18px;margin:0 0 18px;background:#eef5ff;border:1px solid #d9e7ff;border-radius:15px;color:#314e7b}
+.helper-banner p{margin:3px 0 0;font-size:12px;line-height:1.6;color:#536b8e}
+.helper-banner b{font-size:13px;color:#234578}
+.helper-icon{display:grid;place-items:center;flex:0 0 34px;height:34px;border-radius:11px;background:#dce9ff;color:#215bd8;font-size:18px}
+.panel-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
+.panel-heading h3{margin:0 0 3px}.panel-heading p{margin:0;color:var(--muted);font-size:12px}
+.panel-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:#edf3ff;color:#215bd8;font-size:22px}
+#generated{margin-top:18px}
+.question-result{box-shadow:0 4px 18px #18294406}
+.question-result h4{font-size:14px;line-height:1.65}
+table{min-width:520px}
+#questionTable,#usersTable,#examsTable,#reportsTable{overflow-x:auto}
+.status{white-space:nowrap}
+.notice{line-height:1.6}
+@media(max-width:760px){
+ .main{padding:0 14px 18px}
+ .topbar{gap:10px}
+ .topbar h1{font-size:20px}
+ .hero{border-radius:18px}
+ .hero-art{pointer-events:none}
+ .section-head{flex-wrap:wrap}
+ .panel{padding:17px;border-radius:15px}
+ .helper-banner{padding:13px}
+ .form-actions .btn{width:100%}
+ .form-actions .muted{width:100%}
+ .top-right{gap:8px}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;scroll-behavior:auto!important}}
