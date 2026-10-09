@@ -156,6 +156,7 @@ function list_(req){
   const user=userRecord_(req.token),table=String(req.table||'');
   if(['questions','subjects','exams','results','users','attempts'].indexOf(table)<0)throw new Error('Tabel tidak dapat ditampilkan.');
   if(table==='users')role_(user,['admin']);
+  if(table==='questions'||table==='exams')role_(user,['admin','teacher']);
   let records=rows_(table);
   if(table==='users')records=records.map(publicUser_);
   if(table==='questions'&&user.role==='teacher')records=records.filter(r=>r.createdBy===user.id);
@@ -370,7 +371,7 @@ function submitExam_(req){
     if(!a)throw new Error('Sesi ujian tidak ditemukan.');
     if(a.status==='submitted')return {submitted:true,score:Number(a.score)||0,alreadySubmitted:true};
     const exam=rows_('exams').find(e=>e.id===a.examId);if(!exam)throw new Error('Ujian tidak ditemukan.');
-    const ids=Array.isArray(exam.questionIds)?exam.questionIds:JSON.parse(exam.questionIds||'[]'),all=rows_('questions'),answers=Object.assign({},a.answers||{},req.answers||{});
+    const ids=Array.isArray(exam.questionIds)?exam.questionIds:JSON.parse(exam.questionIds||'[]'),all=rows_('questions'),beforeDeadline=Date.now()<Date.parse(a.deadlineAt),answers=beforeDeadline?Object.assign({},a.answers||{},req.answers||{}):Object.assign({},a.answers||{});
     const questions=ids.map(id=>all.find(q=>q.id===id)).filter(Boolean);let earned=0,gradable=0;
     questions.forEach(q=>{
       const type=String(q.type||'multiple_choice'),given=String(answers[q.id]===undefined?'':answers[q.id]).trim(),correct=String(q.answer===undefined?'':q.answer).trim();
