@@ -251,7 +251,7 @@ function callAI_(provider,prompt){
     payload={model:'gpt-4o-mini',temperature:0.25,response_format:{type:'json_object'},messages:[{role:'system',content:'Return valid JSON only.'},{role:'user',content:prompt}]};
   }else if(provider==='gemini'){
     key=p.getProperty('GEMINI_API_KEY');if(!key)throw new Error('GEMINI_API_KEY belum diatur di Script Properties.');
-    url='https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+encodeURIComponent(key);
+    url='https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key='+encodeURIComponent(key);
     payload={contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.25,responseMimeType:'application/json'}};
   }else throw new Error('Provider AI harus openai atau gemini.');
   const res=UrlFetchApp.fetch(url,{method:'post',contentType:'application/json',headers:headers,payload:JSON.stringify(payload),muteHttpExceptions:true});
