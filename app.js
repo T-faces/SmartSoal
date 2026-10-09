@@ -34,7 +34,7 @@ function showBox(id,msg,type=''){const n=$('#'+id);n.textContent=msg;n.className
 function setRoleUI(){
  const role=state.user?.role||'';
  $('#usersNav').classList.toggle('hidden',role!=='admin');
- $('[data-view="generator"],[data-view="bank"]').forEach(n=>n.classList.toggle('hidden',!['admin','teacher'].includes(role)));
+  $$('[data-view="generator"],[data-view="bank"]').forEach(n=>n.classList.toggle('hidden',!['admin','teacher'].includes(role)));
  $('#teacherExamPanel').classList.toggle('hidden',!['admin','teacher'].includes(role));
  $('#studentExamPanel').classList.toggle('hidden',role!=='student');
  if(role==='admin')refreshUsers();
