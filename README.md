@@ -8,7 +8,7 @@ Aplikasi generator soal berbasis AI dan fondasi CBT online untuk guru Indonesia.
 - Database: Google Sheets
 - AI: OpenAI API atau Gemini API; API key hanya di Script Properties Apps Script.
 
-## Deploy frontend
+## Konfigurasi frontend tanpa pengaturan URL oleh setiap pengguna\n1. Buka `config.js` pada branch `Master`.\n2. Isi `API_URL` dengan URL Web App Apps Script yang berakhiran `/exec` (dilakukan satu kali oleh pengelola aplikasi).\n3. Commit perubahan tersebut. Pengguna tidak perlu menyalin atau menyimpan URL backend di browser masing-masing; aplikasi akan memakai konfigurasi pusat dan mencoba memulihkan sesi login yang masih berlaku.\n4. Jika `API_URL` kosong, aplikasi menampilkan pesan agar administrator mengonfigurasi backend. URL deployment tidak dapat ditebak dengan aman dari GitHub Pages.\n\n## Deploy frontend
 1. Repo: https://github.com/T-faces/SmartSoal
 2. Letakkan index.html, styles.css, dan app.js di root repositori.
 3. Settings → Pages → Deploy from a branch → branch Master → /(root).
